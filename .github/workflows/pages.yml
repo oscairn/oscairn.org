@@ -1,0 +1,68 @@
+# NOT ACTIVE YET. This workflow only runs when started by hand, and its deploy job fails harmlessly until
+# the owner switches Pages from "Deploy from a branch" to "GitHub Actions" (Settings > Pages). See DEPLOY.md
+# for the exact steps, the check afterwards and the rollback. At the switch, add the push trigger below.
+name: Pages
+
+on:
+  workflow_dispatch:
+  # push:                # enable at deploy time (DEPLOY.md, step 3)
+  #   branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  # The docs, the profiles and the package records are read from these checkouts (lib/config.mjs).
+  # Pinned to the commits on main when this file was written (2026-11-16); move them to publish newer docs.
+  OSCAIRN_REF: 86dbb154c193996aee1f519bab1155cc4568f3ce
+  PACKAGES_REF: 5773ddfb401dae5791c629f44851ab5135c321af
+  OSCAIRN_DOCS_DIR: ${{ github.workspace }}/_src/oscairn/docs
+  OSCAIRN_PROFILES_DIR: ${{ github.workspace }}/_src/oscairn/hosts/standalone/profiles
+  OSCAIRN_PACKAGES_DIR: ${{ github.workspace }}/_src/packages
+  ASTRO_TELEMETRY_DISABLED: "1"
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0   # scripts/check-identity.mjs compares with the identity file on origin/main
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: oscairn/oscairn
+          ref: ${{ env.OSCAIRN_REF }}
+          path: _src/oscairn
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: oscairn/packages
+          ref: ${{ env.PACKAGES_REF }}
+          path: _src/packages
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26.13.1
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build          # includes the identity-file check
+      - run: node scripts/check-links.mjs dist
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

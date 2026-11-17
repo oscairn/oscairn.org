@@ -1,0 +1,39 @@
+---
+import '@fontsource/inter/latin-400.css';
+import '@fontsource/inter/latin-600.css';
+import '@fontsource/inter/latin-700.css';
+import '../styles/tokens.css';
+import '../styles/site.css';
+import Mark from '../components/Mark.astro';
+import ThemeButton from '../components/ThemeButton.astro';
+import NavLinks from '../components/NavLinks.astro';
+import { GITHUB } from '../../lib/config.mjs';
+const { title, description = 'Oscairn is an open instrument platform.', current } = Astro.props;
+const full = title === 'Oscairn' ? title : `${title} | Oscairn`;
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{full}</title>
+<meta name="description" content={description}>
+<meta name="color-scheme" content="light dark">
+<meta property="og:title" content={full}>
+<meta property="og:description" content={description}>
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script is:inline>try{var t=localStorage.getItem('starlight-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top"><div class="wrap">
+<a class="brand" href="/"><Mark />OSCAIRN</a>
+<NavLinks current={current} />
+<ThemeButton />
+</div></header>
+<main id="main"><slot /></main>
+<footer><div class="wrap"><div>Oscairn is licensed under the AGPL-3.0-or-later. One person's own noncommercial project.</div><div><a href={GITHUB}>Source</a> &middot; <a href={`${GITHUB}/blob/main/LICENSE`}>License</a></div></div></footer>
+</body>
+</html>

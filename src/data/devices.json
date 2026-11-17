@@ -1,0 +1,34 @@
+{
+  "_about": "Which group each device profile belongs to, and the status words. Filled only from what the repository's docs state; each entry names its source. A profile with midi.ports is a controller by RFC 0024, so controllers are grouped from the profile files themselves and only add notes here. A profile not listed here appears under 'Not yet classified' on the page.",
+  "instruments": [
+    { "profile": "fantom-07", "status": "Runs today. Oscairn first ran on one on November 12, 2026, as a bundle in a chroot beside the unit's own system; there is no Oscairn image of its own for it.", "source": "README.md#the-hardware-target", "doc": "docs/fantom-0.md" }
+  ],
+  "controllers": [
+    { "profile": "smk37-elite", "status": "Controller profile, estimated. Notes, pressure response and PLAY/STOP were confirmed by ear with the desktop app on October 28, 2026.", "source": "docs/roadmap.md" },
+    { "profile": "modx-m-usb", "status": "Controller profile over USB (DAW Remote, Mackie Control port), estimated.", "source": "docs/roadmap.md" }
+  ],
+  "targets": [
+    { "profile": "kick", "status": "Studied, not running. Nothing has run on a KICK; the profile's values are estimates, and the desktop app can show its panel layouts.", "source": "docs/kick.md" },
+    { "profile": "ignite", "status": "Planned, not running. The profile is estimated; the desktop app can show its panel layout.", "source": "docs/roadmap.md" },
+    { "profile": "modx-m", "status": "Studied, not running. An estimated profile, the test case for control groups with hardware rows and fader modes.", "source": "docs/rfcs/0024-device-profiles.md" },
+    { "profile": "imx8mm-evk", "status": "An image for this reference board builds but has never been booted.", "source": "os/README.md" }
+  ],
+  "desktop": {
+    "profiles": [
+      { "profile": "qemu-aarch64", "status": "A Linux image that boots into Oscairn full screen, tested in QEMU (a virtual machine, not hardware).", "source": "README.md" }
+    ],
+    "systems": [
+      { "name": "macOS", "status": "The desktop app is tested here; release builds make a macOS disk image.", "source": "README.md" },
+      { "name": "Linux", "status": "Builds and passes its tests in CI; the app itself is untested there.", "source": "README.md" },
+      { "name": "Windows", "status": "Proposed (RFC 0041); nothing built yet.", "source": "docs/rfcs/0041-windows-desktop.md" },
+      { "name": "iOS and iPadOS", "status": "Proposed as developer builds (RFC 0040); nothing built yet.", "source": "docs/rfcs/0040-ios-developer-builds.md" }
+    ],
+    "formats": [
+      { "name": "CLAP", "status": "Hosted. Oscairn's own engines and effects are CLAP plugins; the desktop app runs each in a worker process (tested on macOS and in a Linux arm64 VM). Not yet tested in a DAW.", "source": "README.md" },
+      { "name": "LV2", "status": "Hosted as a build option (-DOSCAIRN_LV2=ON). Not carried in exported archives, and not yet isolated in worker processes.", "source": "README.md" },
+      { "name": "VST3", "status": "Planned.", "source": "README.md" },
+      { "name": "AU", "status": "Planned.", "source": "README.md" },
+      { "name": "Oscairn as a plugin in a DAW", "status": "Planned.", "source": "README.md" }
+    ]
+  }
+}

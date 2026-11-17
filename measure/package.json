@@ -1,0 +1,7 @@
+{
+  "name": "oscairn-site-astro-measure",
+  "private": true,
+  "type": "module",
+  "description": "Measurement-only tools, kept apart so they do not count in the site's node_modules.",
+  "dependencies": { "axe-core": "4.10.2", "jsdom": "26.1.0" }
+}

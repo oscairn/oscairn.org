@@ -1,0 +1,38 @@
+---
+// An icon button that switches between light and dark. Shares Starlight's `starlight-theme` storage key,
+// so the docs and the other pages agree. Hidden until JS runs (without JS the system setting applies).
+---
+<button type="button" class="themebtn" aria-label="Switch to dark theme" hidden>
+  <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+  <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+</button>
+<script>
+  const isDark = () => {
+    const t = document.documentElement.dataset.theme;
+    return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  };
+  for (const b of document.querySelectorAll<HTMLButtonElement>('.themebtn')) {
+    b.hidden = false;
+    const label = () => b.setAttribute('aria-label', isDark() ? 'Switch to light theme' : 'Switch to dark theme');
+    label();
+    b.addEventListener('click', () => {
+      const next = isDark() ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try { localStorage.setItem('starlight-theme', next); } catch {}
+      for (const other of document.querySelectorAll<HTMLButtonElement>('.themebtn')) other.setAttribute('aria-label', next === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+    });
+  }
+</script>
+<style is:global>
+  .themebtn { display: inline-grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 1px solid var(--border); border-radius: 4px; background: transparent; color: var(--muted); cursor: pointer; }
+  .themebtn:hover { color: var(--text); }
+  .themebtn:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .themebtn[hidden] { display: none; }
+  .themebtn .icon-sun { display: none; }
+  :root[data-theme='dark'] .themebtn .icon-sun { display: block; }
+  :root[data-theme='dark'] .themebtn .icon-moon { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) .themebtn .icon-sun { display: block; }
+    :root:not([data-theme='light']) .themebtn .icon-moon { display: none; }
+  }
+</style>

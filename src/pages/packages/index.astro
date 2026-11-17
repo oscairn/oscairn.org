@@ -1,0 +1,60 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { loadPackages } from '../../../lib/packages.mjs';
+const packages = loadPackages();
+const kinds = [...new Set(packages.map((p) => p.kind))].sort();
+---
+<SiteLayout title="Packages" description="The packages in the Oscairn repository: engines, effects and content, signed by their publishers." current="Packages">
+<section style="border-top:0"><div class="wrap">
+<p class="lab">Packages</p><h1 style="font-size:clamp(32px,5vw,48px);margin:0 0 16px">Package catalog</h1>
+<p class="lead">{packages.length} packages in the repository, generated from its release records. The instrument installs packages itself, so there are no downloads here; each page lists the signed archive's file name and size as facts.</p>
+<form class="filter" id="filter" hidden onsubmit="return false">
+  <label>Search <input type="search" id="q" placeholder="name, id, tag"></label>
+  <label>Kind <select id="kind"><option value="">All</option>{kinds.map((k) => <option>{k}</option>)}</select></label>
+  <span id="count" role="status" aria-live="polite"></span>
+</form>
+<div class="tablewrap"><table class="pkgs" id="pkgs">
+<thead><tr><th>Name</th><th>ID</th><th>Kind</th><th>Latest</th><th>Platforms</th><th>License</th></tr></thead>
+<tbody>
+{packages.map((p) => (
+<tr data-kind={p.kind} data-text={[p.name, p.id, p.summary, ...p.tags].join(' ').toLowerCase()}>
+  <th scope="row"><a href={`/packages/${p.id}/`}>{p.name}</a></th>
+  <td class="mono">{p.id}</td><td>{p.kind}</td><td class="mono">{p.latest}</td>
+  <td class="mono">{p.platforms.join(', ') || 'any'}</td>
+  <td class="lic" title={p.license}>{p.license}</td>
+</tr>))}
+</tbody></table></div>
+<p id="none" hidden>No package matches.</p>
+</div></section>
+<script is:inline>
+(function () {
+  var f = document.getElementById('filter'), q = document.getElementById('q'), k = document.getElementById('kind');
+  var rows = [].slice.call(document.querySelectorAll('#pkgs tbody tr')), c = document.getElementById('count'), none = document.getElementById('none');
+  f.hidden = false;
+  function run() {
+    var t = q.value.trim().toLowerCase(), n = 0;
+    rows.forEach(function (r) {
+      var ok = (!k.value || r.dataset.kind === k.value) && (!t || r.dataset.text.indexOf(t) >= 0);
+      r.hidden = !ok; if (ok) n++;
+    });
+    c.textContent = n + ' of ' + rows.length + ' shown'; none.hidden = n > 0;
+  }
+  q.addEventListener('input', run); k.addEventListener('change', run); run();
+})();
+</script>
+<style is:global>
+.filter{display:flex;gap:16px;flex-wrap:wrap;align-items:end;margin:0 0 20px}
+.filter[hidden]{display:none}
+.filter label{display:grid;gap:4px;font:600 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.filter input,.filter select{font:15px var(--sans);padding:10px 12px;border:1px solid var(--border);border-radius:4px;background:var(--raised);color:var(--text);min-width:12em}
+#count{font:13px var(--mono);color:var(--muted);padding-bottom:10px}
+.tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;background:var(--surface)}
+table.pkgs{border-collapse:collapse;width:100%;font-size:14px}
+table.pkgs th,table.pkgs td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+table.pkgs thead th{font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);white-space:nowrap}
+table.pkgs tbody tr:last-child th,table.pkgs tbody tr:last-child td{border-bottom:0}
+table.pkgs tr[hidden]{display:none}
+.mono{font-family:var(--mono);font-size:13px}
+.lic{max-width:16em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+</style>
+</SiteLayout>

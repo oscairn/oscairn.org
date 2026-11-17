@@ -1,0 +1,83 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { loadProfiles } from '../../lib/profiles.mjs';
+import { GITHUB } from '../../lib/config.mjs';
+import data from '../data/devices.json';
+
+const profiles = loadProfiles();
+const byId = new Map(profiles.map((p) => [p.id, p]));
+const listed = new Set([...data.instruments, ...data.targets, ...data.controllers, ...data.desktop.profiles].map((e) => e.profile));
+// By RFC 0024 a profile with midi.ports is a controller's; any such profile is grouped as one even if data.json forgot it.
+const isController = (p) => Array.isArray(p.midi?.ports);
+const controllers = [...data.controllers.map((e) => ({ ...e })),
+  ...profiles.filter((p) => isController(p) && !data.controllers.some((e) => e.profile === p.id)).map((p) => ({ profile: p.id, status: '', source: '' }))];
+const unclassified = profiles.filter((p) => !listed.has(p.id) && !isController(p));
+
+const src = (path) => `${GITHUB}/blob/main/${path.replace(/#.*/, '')}`;
+const kinds = (p) => {
+  const n = {};
+  for (const c of p.controls || []) n[c.kind] = (n[c.kind] || 0) + (c.count || 1);
+  return Object.entries(n).map(([k, v]) => `${v} ${k}`).join(', ') || 'none listed';
+};
+const screen = (p) => (p.screens || []).map((s) => `${s.width}x${s.height}${s.touch ? ' touch' : ''}`).join(', ') || 'none';
+const ports = (p) => (p.midi?.ports || []).map((x) => x.name + (x.protocol === 'mackie' ? ' (Mackie Control)' : x.ignore ? ' (ignored)' : '')).join('; ');
+const estimated = (p) => (p.estimated?.length ? 'estimated' : 'stated');
+const device = (e) => ({ ...e, p: byId.get(e.profile) });
+const rows = (list) => list.map(device).filter((e) => e.p);
+---
+<SiteLayout title="Devices" description="Which hardware Oscairn runs on, which controllers drive it, which devices are only planned, and which desktop systems and plugin formats it supports. Oscairn is pre-release." current="Devices">
+<section style="border-top:0"><div class="wrap">
+<p class="lab">Devices</p><h1 style="font-size:clamp(32px,5vw,48px);margin:0 0 16px">Devices and platforms</h1>
+<div class="status"><p style="margin:0">Oscairn is pre-release alpha software. A desktop app runs today. On hardware, one stage keyboard has been tried so far; everything else below is a controller, a plan or an estimate. Installing on a device is at your own risk and the project gives no warranty.</p></div>
+<p style="margin:24px 0 0">Names and numbers come from the repository's <a href={`${GITHUB}/tree/main/hosts/standalone/profiles`}>device profiles</a>, read when the site is built; the status of each entry is as the docs state it, with the file it comes from.</p>
+</div></section>
+
+<section><div class="wrap">
+<p class="lab">Working instruments</p><h2>Hardware Oscairn runs on today</h2>
+<div class="tablewrap"><table class="pkgs"><thead><tr><th>Instrument</th><th>Cores</th><th>Memory</th><th>Screen</th><th>Controls</th><th>Status</th></tr></thead><tbody>
+{rows(data.instruments).map((e) => (<tr><th scope="row">{e.p.name}</th><td>{e.p.compute?.cores ?? 'none'}</td><td>{e.p.compute?.memory ? `${e.p.compute.memory} MiB` : 'none'}</td><td class="mono">{screen(e.p)}</td><td>{kinds(e.p)}</td><td>{e.status} <a href={src(e.source)}>Source</a></td></tr>))}
+</tbody></table></div>
+</div></section>
+
+<section><div class="wrap">
+<p class="lab">MIDI controllers</p><h2>Controllers that drive Oscairn but do not run it</h2>
+<p class="eg">A controller's profile lists its MIDI ports and controls; it has no platform, screen or memory.</p>
+<div class="tablewrap"><table class="pkgs"><thead><tr><th>Controller</th><th>MIDI ports</th><th>Controls</th><th>Status</th></tr></thead><tbody>
+{rows(controllers).map((e) => (<tr><th scope="row">{e.p.name}</th><td>{ports(e.p)}</td><td>{kinds(e.p)}</td><td>{e.status || 'Not described in the docs I read.'}{e.source && <> <a href={src(e.source)}>Source</a></>}</td></tr>))}
+</tbody></table></div>
+</div></section>
+
+<section><div class="wrap">
+<p class="lab">Potential target instruments</p><h2>Hardware studied or planned, not running</h2>
+<p class="eg">Their profiles' values are estimates unless marked stated; no Oscairn build has run on these.</p>
+<div class="tablewrap"><table class="pkgs"><thead><tr><th>Device</th><th>Cores</th><th>Memory</th><th>Screen</th><th>Controls</th><th>Values</th><th>Status</th></tr></thead><tbody>
+{rows(data.targets).map((e) => (<tr><th scope="row">{e.p.name}</th><td>{e.p.compute?.cores ?? 'none'}</td><td>{e.p.compute?.memory ? `${e.p.compute.memory} MiB` : 'none'}</td><td class="mono">{screen(e.p)}</td><td>{kinds(e.p)}</td><td>{estimated(e.p)}</td><td>{e.status} <a href={src(e.source)}>Source</a></td></tr>))}
+</tbody></table></div>
+</div></section>
+
+<section><div class="wrap">
+<p class="lab">Desktop</p><h2>Operating systems and plugin formats</h2>
+<p class="eg">Status words are the docs' own.</p>
+<div class="tablewrap"><table class="pkgs"><thead><tr><th>Operating system</th><th>Status</th></tr></thead><tbody>
+{data.desktop.systems.map((e) => (<tr><th scope="row">{e.name}</th><td>{e.status} <a href={src(e.source)}>Source</a></td></tr>))}
+{rows(data.desktop.profiles).map((e) => (<tr><th scope="row">{e.p.name}</th><td>{e.status} <a href={src(e.source)}>Source</a></td></tr>))}
+</tbody></table></div>
+<div class="tablewrap" style="margin-top:24px"><table class="pkgs"><thead><tr><th>Plugin format</th><th>Status</th></tr></thead><tbody>
+{data.desktop.formats.map((e) => (<tr><th scope="row">{e.name}</th><td>{e.status} <a href={src(e.source)}>Source</a></td></tr>))}
+</tbody></table></div>
+</div></section>
+
+{unclassified.length > 0 && <section><div class="wrap">
+<p class="lab">Not yet classified</p><h2>Profiles without a group</h2>
+<p class="eg">The repository has these profiles, but its docs do not say which group they belong to.</p>
+<ul>{unclassified.map((p) => <li>{p.name} <span class="mono">({p.id})</span></li>)}</ul>
+</div></section>}
+<style is:global>
+.tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;background:var(--surface)}
+table.pkgs{border-collapse:collapse;width:100%;font-size:14px}
+table.pkgs th,table.pkgs td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+table.pkgs thead th{font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);white-space:nowrap}
+table.pkgs tbody tr:last-child th,table.pkgs tbody tr:last-child td{border-bottom:0}
+.mono{font-family:var(--mono);font-size:13px}
+</style>
+</SiteLayout>
