@@ -105,3 +105,18 @@ Accessibility (axe-core 4.10.2 in jsdom, `measure/pages.mjs`; color-contrast dis
 ## Not verified
 
 No browser was available (none installed, none downloaded), so nothing was looked at: layout, dark mode, the theme toggle, phone width, the search dialog, the packages filter's behavior, and the JS-disabled views are unseen. The dev server (`astro dev`) and its image middleware were not run. Responsiveness of the landing is by the design's own media query.
+
+## Third round: phone header, devices, screenshot (shots from scripts/shots.mjs)
+
+Defects found in the first captures (before: `shots-before/`, git-ignored; after: `shots/`), phone first:
+1. Landing header was three stacked rows (brand; four links; theme button alone in a bordered box), about a quarter of the screen (`landing-390x844-light-top.png`; the owner's iPhone screenshot shows the same, in dark). After: one 64 px row, brand left, search, theme and menu buttons right, links in the menu (`landing-390x844-dark-top.png`, `phone-menu-open-landing.png`); one row also at 360 and 430 px.
+2. Header links were 37 px high and the theme button 40 px: now 44 px or more (the script checks it).
+3. The docs header differed from the landing header (no links and no theme button in the bar; theme and links only at the foot of the menu; round white menu button; 32 px search button). After: same bar, links at the top of the docs menu (`phone-menu-open-guide.png`).
+4. The docs menu button had no aria-expanded; now it and the landing menu button keep it true to the state; Escape closes and focus returns (native popover; checked in the script).
+5. Devices and package tables were cut off on the phone (Status column unreadable): rows are stacked cards under 40rem (`devices-390x844-light.png`).
+6. The package page showed "Publisher ()" (bug on all sizes): fixed.
+7. The 404 page showed an empty "On this page" bar: removed.
+No horizontal scroll was found at any size. Search dialog on the phone (`phone-search-open.png`) looked right and was left alone. Mobile menu on the 404 page and pages without a sidebar uses the landing's panel.
+Landing screenshot: `src/assets/play.png` (1280x720) is shown in a device frame through Astro's image pipeline (AVIF, WebP, PNG fallback, lazy, width/height, alt text); the placeholder returns if the file is absent. The image was read: no "AWM2" text.
+Devices: the MODX M target entry notes its firmware is encrypted "per the project owner": the docs do not state it (grep of docs/ and README.md for "encrypt" finds nothing about it).
+The link checker ignores the `/docs/#search` hook and counts external links separately. Not checked: a real Safari (the capture setup is Chromium at the same widths; it reproduces the owner's three rows, so the layout was the cause, not the browser).

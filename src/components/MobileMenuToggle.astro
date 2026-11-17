@@ -1,0 +1,18 @@
+---
+// Starlight's sidebar menu button, restyled as the bar's menu button. It opens the sidebar popover (Escape closes
+// it and returns focus natively); the sidebar starts with the site links on phones (Sidebar.astro).
+---
+<button type="button" class="menubtn docs-menu md:sl-hidden print:hidden" data-menu-button popovertarget="starlight__sidebar" aria-controls="starlight__sidebar" aria-expanded="false" aria-label="Menu">
+  <svg class="icon-bars" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  <svg class="icon-close" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+</button>
+<script>
+  document.addEventListener('toggle', (e) => {
+    if ((e.target as HTMLElement).id !== 'starlight__sidebar') return;
+    document.querySelector('.docs-menu')?.setAttribute('aria-expanded', String((e as ToggleEvent).newState === 'open'));
+  }, true);
+</script>
+<style is:global>
+  body:has(#starlight__sidebar:popover-open) { overflow: hidden; }
+  @media (min-width: 50rem) { body:has(#starlight__sidebar:popover-open) { overflow: auto; } }
+</style>

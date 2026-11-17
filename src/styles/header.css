@@ -1,0 +1,53 @@
+/* The one header bar, for the landing, packages and devices pages and the docs (Starlight) alike.
+   Phone (under 50rem, Starlight's own breakpoint): brand at the left; search, theme and menu buttons at the right,
+   each 44 px square; Docs / Packages / Devices / Source inside the menu. Wider: the links sit in the bar. */
+:root { --bar-h: 64px; --sl-nav-height: 4rem; --sl-menu-button-size: 2.75rem; }
+.brand { display: flex; align-items: center; gap: 10px; min-height: 44px; font-weight: 700; letter-spacing: .04em; text-decoration: none; font-size: 18px; color: var(--text); margin-right: auto; }
+.brand .mark { flex: none; }
+.bar { display: flex; align-items: center; gap: 8px; min-height: var(--bar-h); }
+header.top { border-bottom: 1px solid var(--border); background: var(--surface); }
+.tools { display: flex; align-items: center; gap: 8px; }
+
+/* Icon buttons: 44 px targets, visible focus. */
+.iconbtn, .menubtn, .themebtn { display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--border); border-radius: 4px; background: transparent; color: var(--muted); cursor: pointer; text-decoration: none; }
+.iconbtn:hover, .menubtn:hover, .themebtn:hover { color: var(--text); }
+.iconbtn:focus-visible, .menubtn:focus-visible, .themebtn:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.menubtn .icon-close, .menubtn[aria-expanded='true'] .icon-bars { display: none; }
+.menubtn[aria-expanded='true'] .icon-close { display: block; }
+
+/* Navigation links: a row in the bar, a column in the menu. */
+.mainnav { display: flex; gap: 4px; }
+.mainnav a { display: flex; align-items: center; font: 600 13px var(--mono); text-transform: uppercase; letter-spacing: .08em; text-decoration: none; padding: 0 12px; min-height: 44px; border: 1px solid transparent; border-radius: 4px; color: var(--muted); }
+.mainnav a:hover, .mainnav a[aria-current] { color: var(--text); border-color: var(--border); }
+.mainnav.menu { flex-direction: column; gap: 0; }
+.mainnav.menu a { min-height: 52px; font-size: 15px; border-radius: 0; border: 0; border-bottom: 1px solid var(--border); padding: 0 16px; color: var(--text); }
+.mainnav.menu a[aria-current] { color: var(--accent); }
+
+/* The menu panel (popover: Escape and clicking outside close it, focus returns to the button, no script needed). */
+.sitemenu { position: fixed; inset: var(--bar-h) 0 auto 0; margin: 0; width: 100%; max-height: calc(100dvh - var(--bar-h)); overflow: auto; padding: 0; border: 0; border-bottom: 1px solid var(--border); background: var(--surface); color: var(--text); }
+.sitemenu:not(:popover-open) { display: none; }
+@media (max-width: 49.999rem) { .desk { display: none !important; } }
+@media (min-width: 50rem) { .menubtn, .sitemenu { display: none !important; } .only-phone { display: none !important; } }
+
+/* Starlight's header and sidebar menu take the same bar. */
+.sl-header { display: flex; align-items: center; gap: 8px; height: 100%; }
+.sl-header .brand { margin-right: auto; }
+.sl-header .tools { gap: 8px; }
+site-search button[data-open-modal] { min-height: 44px; }
+@media (max-width: 49.999rem) { site-search button[data-open-modal] { width: 44px; height: 44px; justify-content: center; border: 1px solid var(--border); border-radius: 4px; padding: 0; } }
+.docs-menu { position: fixed; top: calc((var(--sl-nav-height) - 44px) / 2); inset-inline-end: var(--sl-nav-pad-x); z-index: var(--sl-z-index-navbar); background: var(--surface); }
+:root[data-has-sidebar] .header { padding-inline-end: calc(var(--sl-nav-pad-x) + 44px + 8px); }
+@media (min-width: 50rem) { :root[data-has-sidebar] .header { padding-inline-end: var(--sl-nav-pad-x); } }
+.sidebar-nav-top { border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+
+/* Phone: table rows become stacked cards (each cell shows its column name), so nothing is cut off. */
+@media (max-width: 40rem) {
+  table.pkgs thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  table.pkgs, table.pkgs tbody, table.pkgs tr, table.pkgs th, table.pkgs td { display: block; width: 100%; }
+  table.pkgs tr { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  table.pkgs tbody tr:last-child { border-bottom: 0; }
+  table.pkgs tr[hidden] { display: none; }
+  table.pkgs th, table.pkgs td { border: 0 !important; padding: 3px 0 !important; }
+  table.pkgs td::before, table.pkgs tbody th:not(:first-child)::before { content: attr(data-label); display: block; font: 600 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+  .lic { max-width: none; white-space: normal; }
+}

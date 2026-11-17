@@ -34,11 +34,11 @@ const sizeNote = (e) => (e.size ? ` (about ${formatSize(e.size)})` : '');
 <tbody>
 {p.versions.map((v) => (
 <tr>
-  <th scope="row" class="mono">{v.version}{v.yanked ? ' (yanked)' : ''}</th>
-  <td>{v.channel}</td><td class="mono">{v.exports.length ? v.exports.map((e, i) => <>{i > 0 && <br />}<a href={e.url}>{e.platform ?? 'any'}</a>{sizeNote(e)}</>) : (v.platforms.join(', ') || 'any')}</td>
-  <td class="mono">{v.archive.file}</td><td>{formatSize(v.archive.size)}</td>
-  <td class="mono" title={v.archive.sha256}>{short(v.archive.sha256)}</td>
-  <td class="mono">{v.source ? short(v.source.revision) : ''}</td>
+  <th scope="row" class="mono" data-label="Version">{v.version}{v.yanked ? ' (yanked)' : ''}</th>
+  <td data-label="Channel">{v.channel}</td><td class="mono" data-label="Platforms">{v.exports.length ? v.exports.map((e, i) => <>{i > 0 && <br />}<a href={e.url}>{e.platform ?? 'any'}</a>{sizeNote(e)}</>) : (v.platforms.join(', ') || 'any')}</td>
+  <td class="mono" data-label="Archive file (all platforms)">{v.archive.file}</td><td data-label="Size">{formatSize(v.archive.size)}</td>
+  <td class="mono" title={v.archive.sha256} data-label="SHA-256">{short(v.archive.sha256)}</td>
+  <td class="mono" data-label="Source revision">{v.source ? short(v.source.revision) : ''}</td>
 </tr>))}
 </tbody></table></div>
 {latest.dependencies.length > 0 && <><h2 style="margin-top:40px">Needs</h2><ul class="mono">{latest.dependencies.map((d) => <li>{typeof d === 'string' ? d : (d.id ?? JSON.stringify(d))}</li>)}</ul></>}

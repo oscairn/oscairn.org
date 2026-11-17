@@ -4,7 +4,10 @@ import '@fontsource/inter/latin-600.css';
 import '@fontsource/inter/latin-700.css';
 import '../styles/tokens.css';
 import '../styles/site.css';
+import '../styles/header.css';
 import Mark from '../components/Mark.astro';
+import SiteMenu from '../components/SiteMenu.astro';
+import SearchLink from '../components/SearchLink.astro';
 import ThemeButton from '../components/ThemeButton.astro';
 import NavLinks from '../components/NavLinks.astro';
 import { GITHUB } from '../../lib/config.mjs';
@@ -28,10 +31,10 @@ const full = title === 'Oscairn' ? title : `${title} | Oscairn`;
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<header class="top"><div class="wrap">
+<header class="top"><div class="wrap bar">
 <a class="brand" href="/"><Mark />OSCAIRN</a>
 <NavLinks current={current} />
-<ThemeButton />
+<div class="tools"><SearchLink /><ThemeButton /><SiteMenu current={current} /></div>
 </div></header>
 <main id="main"><slot /></main>
 <footer><div class="wrap"><div>Oscairn is licensed under the AGPL-3.0-or-later. One person's own noncommercial project.</div><div><a href={GITHUB}>Source</a> &middot; <a href={`${GITHUB}/blob/main/LICENSE`}>License</a></div></div></footer>

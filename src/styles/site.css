@@ -16,12 +16,6 @@ a{color:inherit}
 
 body{font:16px/1.55 var(--sans)}
 .wrap{max-width:1120px;margin:0 auto;padding:0 16px}
-header.top{border-bottom:1px solid var(--border);background:var(--surface)}
-header.top .wrap{display:flex;align-items:center;gap:16px;min-height:60px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.04em;text-decoration:none;font-size:18px;margin-right:auto}
-nav{display:flex;gap:4px;flex-wrap:wrap}
-nav a{font:600 13px var(--mono);text-transform:uppercase;letter-spacing:.08em;text-decoration:none;padding:10px 12px;border:1px solid transparent;border-radius:4px;color:var(--muted)}
-nav a:hover{color:var(--text);border-color:var(--border)}
 .led{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent-fill);box-shadow:0 0 8px var(--accent-fill);margin-right:8px}
 .hero{padding:56px 0 48px;background:radial-gradient(900px 300px at 80% 0,var(--glow),transparent)}
 .hero .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:32px;align-items:center}
@@ -53,10 +47,9 @@ footer .wrap{display:flex;gap:16px 32px;flex-wrap:wrap;justify-content:space-bet
 @media (max-width:760px){.hero .grid,.fit{grid-template-columns:1fr}.hero{padding-top:32px}}
 
 /* Additions for the framework build */
-.brand .mark{flex:none}
-header.top .brand{color:var(--text)}
 .pk .pkmeta{font:12px var(--mono);color:var(--muted);margin-top:12px}
 .pk a.cardlink{text-decoration:none;color:inherit;display:block}
 .pk a.cardlink:hover h3{text-decoration:underline}
 .more{margin:24px 0 0;font:600 13px var(--mono);letter-spacing:.06em;text-transform:uppercase}
 .clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.screen .shot{display:block;width:100%;height:auto;border-radius:6px;background:var(--bg)}

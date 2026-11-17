@@ -1,13 +1,8 @@
 ---
 import { GITHUB } from '../../lib/config.mjs';
 const links = [['Docs', '/docs/'], ['Packages', '/packages/'], ['Devices', '/devices/'], ['Source', GITHUB]];
-const { current, label = 'Site' } = Astro.props;
+const { current, label = 'Site', variant = 'bar' } = Astro.props;
 ---
-<nav class="mainnav" aria-label={label}>
-  {links.map(([label, href]) => <a href={href} aria-current={current === label ? 'page' : undefined}>{label}</a>)}
+<nav class:list={['mainnav', variant, variant === 'bar' && 'desk']} aria-label={label}>
+  {links.map(([l, href]) => <a href={href} aria-current={current === l ? 'page' : undefined}>{l}</a>)}
 </nav>
-<style>
-  .mainnav { display: flex; gap: 4px; flex-wrap: wrap; }
-  .mainnav a { font: 600 13px var(--mono); text-transform: uppercase; letter-spacing: .08em; text-decoration: none; padding: 10px 12px; border: 1px solid transparent; border-radius: 4px; color: var(--muted); }
-  .mainnav a:hover, .mainnav a[aria-current] { color: var(--text); border-color: var(--border); }
-</style>

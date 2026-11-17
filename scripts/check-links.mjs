@@ -34,6 +34,7 @@ for (const [file, html] of pages) {
     const abs = p ? path.join(dist, decodeURI(p.startsWith('/') ? p : path.posix.join(base, p))) : file;
     const target = p ? resolveFile(abs) : file;
     if (!target) { broken.push(`${path.relative(dist, file)}: ${u} (no such file)`); continue; }
+    if (frag === 'search') continue; // /docs/#search is a runtime hook that opens the search dialog
     if (frag && target.endsWith('.html') && !ids.get(target)?.has(decodeURIComponent(frag))) broken.push(`${path.relative(dist, file)}: ${u} (no such anchor)`);
   }
 }

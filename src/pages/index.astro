@@ -1,7 +1,11 @@
 ---
+import { Picture } from 'astro:assets';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { GITHUB } from '../../lib/config.mjs';
 import { loadPackages } from '../../lib/packages.mjs';
+// src/assets/play.png (1280x720), when present, replaces the placeholder panel.
+const found = import.meta.glob('../assets/play.png', { eager: true, import: 'default' });
+const play = Object.values(found)[0];
 const packages = loadPackages();
 const pick = ['org.oscairn.sampler', 'org.oscairn.effects', 'org.oscairn.step-sequencer', 'org.oscairn.fm-cartridges'];
 const featured = pick.map((id) => packages.find((p) => p.id === id)).filter(Boolean);
@@ -12,7 +16,11 @@ const featured = pick.map((id) => packages.find((p) => p.id === id)).filter(Bool
 <h1>Oscairn</h1>
 <p class="lead">Oscairn is an open instrument platform: one realtime host for synthesis engines, samplers, effects and sequencers, made for stage keyboards and the desktop.</p>
 <div class="btns"><a class="btn p" href="/docs/">Read the docs</a><a class="btn s" href={GITHUB}>Get the source</a></div></div>
-<div class="screen" aria-label="Placeholder for a screenshot"><div class="ph">PLACEHOLDER<br>Oscairn's own UI will be shown here.<br>No screenshot yet.</div></div>
+{play ? (
+  <div class="screen"><Picture src={play} formats={['avif', 'webp']} widths={[480, 800, 1280]} sizes="(min-width: 760px) 520px, 90vw" alt="The Play screen: a Performance's scenes and part faders" width={1280} height={720} loading="lazy" decoding="async" class="shot" /></div>
+) : (
+  <div class="screen" aria-label="Placeholder for a screenshot"><div class="ph">PLACEHOLDER<br>Oscairn's own UI will be shown here.<br>No screenshot yet.</div></div>
+)}
 </div></div>
 <section><div class="wrap"><p class="lab">What it does</p><h2>Built for playing live</h2><div class="feat"><article class="card"><span class="n">01</span><h3>One engine, many sounds</h3><p>An engine with sound contexts holds several prepared sounds in one instance. Each MIDI channel picks one, and switching reloads nothing and keeps held notes playing.</p></article><article class="card"><span class="n">02</span><h3>Seamless Performance changes</h3><p>Open another Performance from a setlist or the library and the outgoing one's held notes and tails ring out while new notes play the new one.</p></article><article class="card"><span class="n">03</span><h3>Plugins in their own processes</h3><p>The desktop app runs plugins in isolated worker processes, with restarts and memory limits, so a plugin that fails stays out of the audio engine.</p></article><article class="card"><span class="n">04</span><h3>Your sounds are files</h3><p>Sounds and Performances are plain folders in a documented format. A library, or one Performance with its samples, exports to a single archive file.</p></article></div></div></section>
 <section><div class="wrap fit"><div><p class="lab">How it fits together</p><h2>Audio on its own, everything else around it</h2>

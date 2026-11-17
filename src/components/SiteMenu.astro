@@ -1,0 +1,17 @@
+---
+// The phone menu: a button and a popover panel holding the site links. The popover gives Escape, outside-click
+// closing and focus return natively; the script only keeps aria-expanded true to the state.
+import NavLinks from './NavLinks.astro';
+const { current } = Astro.props;
+---
+<button type="button" class="menubtn" data-menu-button popovertarget="site-menu" aria-controls="site-menu" aria-expanded="false" aria-label="Menu">
+  <svg class="icon-bars" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  <svg class="icon-close" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+</button>
+<div id="site-menu" popover class="sitemenu"><NavLinks variant="menu" label="Site menu" current={current} /></div>
+<script>
+  const menu = document.getElementById('site-menu');
+  menu?.addEventListener('toggle', (e) => {
+    document.querySelector('[data-menu-button][popovertarget="site-menu"]')?.setAttribute('aria-expanded', String((e as ToggleEvent).newState === 'open'));
+  });
+</script>

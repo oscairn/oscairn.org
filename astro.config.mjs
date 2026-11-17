@@ -42,9 +42,11 @@ export default defineConfig({
       description: 'Oscairn is an open instrument platform: one realtime host for synthesis engines, samplers, effects and sequencers.',
       favicon: '/favicon.svg',
       sidebar,
-      customCss: ['@fontsource/inter/latin-400.css', '@fontsource/inter/latin-600.css', '@fontsource/inter/latin-700.css', './src/styles/tokens.css', './src/styles/starlight.css'],
+      customCss: ['@fontsource/inter/latin-400.css', '@fontsource/inter/latin-600.css', '@fontsource/inter/latin-700.css', './src/styles/tokens.css', './src/styles/header.css', './src/styles/starlight.css'],
       components: {
-        SocialIcons: './src/components/NavLinks.astro',
+        Header: './src/components/Header.astro',
+        Sidebar: './src/components/Sidebar.astro',
+        MobileMenuToggle: './src/components/MobileMenuToggle.astro',
         DraftContentNotice: './src/components/NoNotice.astro',
         ThemeSelect: './src/components/ThemeButton.astro',
         SiteTitle: './src/components/SiteTitle.astro',
