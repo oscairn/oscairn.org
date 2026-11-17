@@ -55,6 +55,7 @@ jobs:
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: dist
+          include-hidden-files: true   # .well-known/ (the publisher identity) and .nojekyll must be deployed
 
   deploy:
     needs: build
@@ -65,3 +66,13 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+      - name: The publisher identity file is served with the same bytes
+        run: |
+          want=7999d808125601eb87b72f1b80b3aa7bf77f79484fe2d6221ad9cbad9b608b23
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            got=$(curl -s "https://oscairn.org/.well-known/oscairn-publisher.json?check=$i" | sha256sum | cut -d' ' -f1)
+            [ "$got" = "$want" ] && exit 0
+            sleep 15
+          done
+          echo "::error::https://oscairn.org/.well-known/oscairn-publisher.json does not return the identity file (sha256 $got). Packages depend on it: roll back (DEPLOY.md)."
+          exit 1
