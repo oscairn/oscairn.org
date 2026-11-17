@@ -1,12 +1,11 @@
-# NOT ACTIVE YET. This workflow only runs when started by hand, and its deploy job fails harmlessly until
-# the owner switches Pages from "Deploy from a branch" to "GitHub Actions" (Settings > Pages). See DEPLOY.md
-# for the exact steps, the check afterwards and the rollback. At the switch, add the push trigger below.
+# Builds the site and deploys it to GitHub Pages (Settings > Pages > Source: GitHub Actions). See DEPLOY.md
+# for the check afterwards and the rollback.
 name: Pages
 
 on:
   workflow_dispatch:
-  # push:                # enable at deploy time (DEPLOY.md, step 3)
-  #   branches: [main]
+  push:
+    branches: [main]
 
 permissions:
   contents: read
@@ -21,7 +20,7 @@ env:
   # The docs, the profiles and the package records are read from these checkouts (lib/config.mjs).
   # Pinned to the commits on main when this file was written (2026-11-16); move them to publish newer docs.
   OSCAIRN_REF: 86dbb154c193996aee1f519bab1155cc4568f3ce
-  PACKAGES_REF: 5773ddfb401dae5791c629f44851ab5135c321af
+  PACKAGES_REF: a04d69225acfd539cc45f6db2dd92901bd86d4cd
   OSCAIRN_DOCS_DIR: ${{ github.workspace }}/_src/oscairn/docs
   OSCAIRN_PROFILES_DIR: ${{ github.workspace }}/_src/oscairn/hosts/standalone/profiles
   OSCAIRN_PACKAGES_DIR: ${{ github.workspace }}/_src/packages
