@@ -11,7 +11,7 @@ if (override && /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?\//.test(override)) 
 const id = params.get('id') || '';
 
 const links = (v) => v.links.length
-  ? v.links.map((l) => `<a href="${h(l.url)}">${h(l.platform ?? 'any')}</a>${l.size ? ` (about ${formatSize(l.size)})` : ''}`)
+  ? v.links.map((l) => `<a class="np" href="${h(l.url)}">${h(l.platform ?? 'any')}</a>${l.size ? ` (about ${formatSize(l.size)})` : ''}`)
   : [h(v.platforms.join(', ') || 'any')];
 
 async function main() {

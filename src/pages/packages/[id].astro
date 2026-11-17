@@ -20,7 +20,7 @@ const sizeNote = (e) => (e.size ? ` (about ${formatSize(e.size)})` : '');
 <dl>
 <div><dt>Latest version</dt><dd class="mono">{p.latest}</dd></div>
 <div><dt>Kind</dt><dd>{p.kind}</dd></div>
-<div><dt>Platforms</dt><dd class="mono">{latest.exports.length ? latest.exports.map((e, i) => <>{i > 0 && ', '}<a href={e.url}>{e.platform ?? 'any'}</a>{sizeNote(e)}</>) : (latest.platforms.join(', ') || 'any (content, no native builds)')}</dd></div>
+<div><dt>Platforms</dt><dd class="mono">{latest.exports.length ? latest.exports.map((e, i) => <>{i > 0 && ', '}<a class="np" href={e.url}>{e.platform ?? 'any'}</a>{sizeNote(e)}</>) : (latest.platforms.join(', ') || 'any (content, no native builds)')}</dd></div>
 <div><dt>License</dt><dd>{p.license}</dd></div>
 <div><dt>Publisher</dt><dd>{p.publisher.name} <span class="mono">({p.publisher.id})</span></dd></div>
 <div><dt>Source</dt><dd>{p.source ? <a href={p.source.url}>{p.source.url}</a> : 'not stated'}{p.source && <span class="mono"> at {short(p.source.revision)}</span>}</dd></div>
@@ -35,7 +35,7 @@ const sizeNote = (e) => (e.size ? ` (about ${formatSize(e.size)})` : '');
 {p.versions.map((v) => (
 <tr>
   <th scope="row" class="mono" data-label="Version">{v.version}{v.yanked ? ' (yanked)' : ''}</th>
-  <td data-label="Channel">{v.channel}</td><td class="mono" data-label="Platforms">{v.exports.length ? v.exports.map((e, i) => <>{i > 0 && <br />}<a href={e.url}>{e.platform ?? 'any'}</a>{sizeNote(e)}</>) : (v.platforms.join(', ') || 'any')}</td>
+  <td data-label="Channel">{v.channel}</td><td class="mono" data-label="Platforms">{v.exports.length ? v.exports.map((e, i) => <>{i > 0 && <br />}<a class="np" href={e.url}>{e.platform ?? 'any'}</a>{sizeNote(e)}</>) : (v.platforms.join(', ') || 'any')}</td>
   <td class="mono" data-label="Archive file (all platforms)">{v.archive.file}</td><td data-label="Size">{formatSize(v.archive.size)}</td>
   <td class="mono" title={v.archive.sha256} data-label="SHA-256">{short(v.archive.sha256)}</td>
   <td class="mono" data-label="Source revision">{v.source ? short(v.source.revision) : ''}</td>
@@ -53,5 +53,6 @@ table.pkgs th,table.pkgs td{text-align:left;padding:10px 12px;border-bottom:1px 
 table.pkgs thead th{font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);white-space:nowrap}
 table.pkgs tbody tr:last-child th,table.pkgs tbody tr:last-child td{border-bottom:0}
 .mono{font-family:var(--mono);font-size:13px}
+.np{white-space:nowrap}
 </style>
 </SiteLayout>

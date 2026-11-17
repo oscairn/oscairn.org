@@ -21,7 +21,7 @@ let entries = snapshot;
 let shown = 0, results = [];
 
 const href = (e) => (builtIds.has(e.id) ? `/packages/${e.id}/` : `/packages/view/?id=${encodeURIComponent(e.id)}`);
-const row = (e) => `<tr><th scope="row" data-label="Name"><a href="${href(e)}">${escapeHtml(e.name)}</a></th><td class="mono" data-label="ID">${escapeHtml(e.id)}</td><td data-label="Kind">${escapeHtml(e.kind)}</td><td class="mono" data-label="Latest">${escapeHtml(e.latest)}</td><td class="mono" data-label="Platforms">${escapeHtml(e.platforms.join(', ') || 'any')}</td><td class="lic" data-label="License" title="${escapeHtml(e.license)}">${escapeHtml(e.license)}</td></tr>`;
+const row = (e) => `<tr><th scope="row" data-label="Name"><a href="${href(e)}">${escapeHtml(e.name)}</a></th><td class="mono" data-label="ID">${escapeHtml(e.id)}</td><td data-label="Kind">${escapeHtml(e.kind)}</td><td class="mono" data-label="Latest">${escapeHtml(e.latest)}</td><td class="mono" data-label="Platforms">${e.platforms.length ? e.platforms.map((x) => `<span class="np">${escapeHtml(x)}</span>`).join(', ') : 'any'}</td><td class="lic" data-label="License" title="${escapeHtml(e.license)}">${escapeHtml(e.license)}</td></tr>`;
 
 function fillSelects() {
   const keep = { kind: kind.value, platform: platform.value };
@@ -89,10 +89,11 @@ try {
   fillSelects();
   kind.value = params.get('kind') || kind.value; platform.value = params.get('platform') || platform.value;
   render({ keepPages: true });
-  status.textContent = `Showing the repository as of ${fmt(repo.asOf)} (serial ${repo.serial}, read from the ${repo.via === 'catalog' ? 'compact catalog' : 'full index'}). Read as published; this page does not check signatures, the instrument does when it installs.`;
+  status.textContent = `Live from the repository as of ${fmt(repo.asOf)} (serial ${repo.serial}). Not signature-checked here.`;
+  status.title = `Read from the ${repo.via === 'catalog' ? 'compact catalog' : 'full index'} as published. This page does not check signatures; the instrument does when it installs.`;
   app.dataset.live = repo.via;
 } catch (err) {
-  status.textContent = `Showing the list from when this site was built (${fmt(builtOn)}); the live repository could not be read.`;
+  status.textContent = `Snapshot from the build (${fmt(builtOn)}); the live repository could not be read.`;
   app.dataset.live = 'failed';
   console.warn('packages: live index not available:', err.message);
 }

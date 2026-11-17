@@ -1,5 +1,5 @@
 // The live package table and the package view page, checked in a browser: real index, synthetic 10,000-package
-// repositories (full index and compact catalog), a failing fetch and JavaScript off. Screenshots go to shots/live-*.png.
+// repositories (full index and compact catalog), a failing fetch and JavaScript off. Screenshots go to shots-live/ (not wiped by scripts/shots.mjs).
 // Usage: node scripts/shots-live.mjs   (needs dist/, network for the "real" case)
 import http from 'node:http';
 import fs from 'node:fs';
@@ -8,7 +8,7 @@ import zlib from 'node:zlib';
 import { chromium } from '@playwright/test';
 import { generate } from './synthetic-index.mjs';
 
-const dist = path.resolve('dist'), out = path.resolve('shots'), syn = path.join(out, '.synthetic');
+const dist = path.resolve('dist'), out = path.resolve('shots-live'), syn = path.join(out, '.synthetic');
 fs.mkdirSync(out, { recursive: true });
 for (const f of fs.readdirSync(out)) if (f.startsWith('live-') && f.endsWith('.png')) fs.rmSync(path.join(out, f));
 fs.rmSync(syn, { recursive: true, force: true });
@@ -48,6 +48,24 @@ for (const scheme of ['light', 'dark']) {
     report.push(`real ${vn} ${scheme}: ${await page.locator('#count').textContent()} | ${await page.locator('#pkg-status').textContent()}`.slice(0, 260));
     await shot(page, 'real');
     await page.close();
+    // 1b. before and after the swap: the built table, then the live one (the repository answer is held back 1.5 s)
+    {
+      const p = await ctx.newPage();
+      await p.route('**/repository.json', async (r) => { await new Promise((x) => setTimeout(x, 1500)); await r.continue(); });
+      await p.goto(base + '/packages/', { waitUntil: 'load' });
+      await p.waitForTimeout(300);
+      await shot(p, 'swap-before');
+      const r0 = await p.evaluate(() => { const b = document.querySelector('#pkg-body tr').getBoundingClientRect(); return b.top + scrollY; });
+      const h0 = await p.evaluate(() => document.querySelector('.tablewrap').getBoundingClientRect().height);
+      await p.waitForFunction(() => document.getElementById('pkg-app').dataset.live, null, { timeout: 30000 });
+      await shot(p, 'swap-after');
+      const h1 = await p.evaluate(() => document.querySelector('.tablewrap').getBoundingClientRect().height);
+      const top = await p.evaluate(() => document.querySelector('.tablewrap').getBoundingClientRect().top);
+      const r1 = await p.evaluate(() => { const b = document.querySelector('#pkg-body tr').getBoundingClientRect(); return b.top + scrollY; });
+      if (Math.abs(r1 - r0) > 0.5) problems.push(`swap ${vn} ${scheme}: the first row moved ${r1 - r0} px`);
+      report.push(`swap ${vn} ${scheme}: first row top ${r0} -> ${r1} (shift ${r1 - r0} px); table height ${Math.round(h0)} -> ${Math.round(h1)} px, top ${Math.round(top)}`);
+      await p.close();
+    }
     // 2./3. synthetic 10,000: index only, and with the compact catalog
     for (const name of ['idx10k', 'cat10k']) {
       page = await open(ctx, `/packages/?repo=${encodeURIComponent(`${base}/__syn/${name}/`)}`);
@@ -55,6 +73,7 @@ for (const scheme of ['light', 'dark']) {
       if (n > 50) problems.push(`${name} ${vn}: ${n} rows in the DOM (more than one page)`);
       if ((await page.locator('#pkg-app').getAttribute('data-live')) !== (name === 'cat10k' ? 'catalog' : 'index')) problems.push(`${name} ${vn}: wrong source ${await page.locator('#pkg-app').getAttribute('data-live')}`);
       await shot(page, name);
+      if (scheme === 'light') { await page.locator('#more').scrollIntoViewIfNeeded(); await page.evaluate(() => window.scrollBy(0, 200)); await shot(page, `${name}-pager`); await page.evaluate(() => window.scrollTo(0, 0)); }
       if (scheme === 'light') {
         const cdp = await ctx.newCDPSession(page);
         await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
