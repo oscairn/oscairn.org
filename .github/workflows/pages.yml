@@ -6,6 +6,10 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
+  schedule:
+    - cron: "17 5 * * *"   # daily: the package records are read at the head of the packages repository's main branch
+  repository_dispatch:
+    types: [packages-published]   # optional: the packages repository's publish step can send this (DEPLOY.md, "Fresh packages")
 
 permissions:
   contents: read
@@ -18,9 +22,11 @@ concurrency:
 
 env:
   # The docs, the profiles and the package records are read from these checkouts (lib/config.mjs).
-  # Pinned to the commits on main when this file was written (2026-11-16); move them to publish newer docs.
+  # The docs and profiles are pinned to a commit of oscairn/oscairn (move it to publish newer docs). The package
+  # records are read at the head of the packages repository's main branch, so each build shows what is published;
+  # the package table also reads the published index live in the browser (src/scripts/packages-table.js).
   OSCAIRN_REF: 86dbb154c193996aee1f519bab1155cc4568f3ce
-  PACKAGES_REF: a04d69225acfd539cc45f6db2dd92901bd86d4cd
+  PACKAGES_REF: main
   OSCAIRN_DOCS_DIR: ${{ github.workspace }}/_src/oscairn/docs
   OSCAIRN_PROFILES_DIR: ${{ github.workspace }}/_src/oscairn/hosts/standalone/profiles
   OSCAIRN_PACKAGES_DIR: ${{ github.workspace }}/_src/packages

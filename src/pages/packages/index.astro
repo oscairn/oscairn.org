@@ -1,50 +1,50 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { loadPackages } from '../../../lib/packages.mjs';
+import { PACKAGES_SITE } from '../../../lib/config.mjs';
 const packages = loadPackages();
 const kinds = [...new Set(packages.map((p) => p.kind))].sort();
+// The build renders (and embeds as the offline fallback) at most this many rows; the script pages through the rest.
+const shown = [...packages].sort((a, b) => a.name.localeCompare(b.name)).slice(0, 200);
+const snapshot = JSON.stringify(shown.map((p) => ({ id: p.id, name: p.name, summary: p.summary, tags: p.tags, license: p.license, kind: p.kind, publisher: p.publisher, latest: p.latest, platforms: p.platforms, versions: null }))).replace(/</g, '\\u003c');
+const built = new Date().toISOString();
 ---
 <SiteLayout title="Packages" description="The packages in the Oscairn repository: engines, effects and content, signed by their publishers." current="Packages">
 <section style="border-top:0"><div class="wrap">
 <p class="lab">Packages</p><h1 style="font-size:clamp(32px,5vw,48px);margin:0 0 16px">Package catalog</h1>
-<p class="lead">{packages.length} packages in the repository, generated from its release records. The instrument installs packages itself, so there are no downloads here; each page lists the signed archive's file name and size as facts.</p>
-<form class="filter" id="filter" hidden onsubmit="return false">
-  <label>Search <input type="search" id="q" placeholder="name, id, tag"></label>
+<p class="lead">The packages in Oscairn's repository, read live from its published index when this page loads (and from the site's build as a fallback). The instrument installs packages itself; each package page links its ready-made archives for installing by hand or offline.</p>
+<div id="pkg-app" data-repo={PACKAGES_SITE} data-built={built}>
+<form class="filter" id="filter" hidden>
+  <label>Search <input type="search" id="q" placeholder="name, id, tag" autocomplete="off"></label>
   <label>Kind <select id="kind"><option value="">All</option>{kinds.map((k) => <option>{k}</option>)}</select></label>
-  <span id="count" role="status" aria-live="polite"></span>
+  <label>Platform <select id="platform"><option value="">All</option></select></label>
+  <label>Sort <select id="sort"><option value="name">Name</option><option value="id">ID</option><option value="kind">Kind</option></select></label>
 </form>
-<div class="tablewrap"><table class="pkgs" id="pkgs">
+<p id="count" class="countline" role="status" aria-live="polite">{shown.length} of {packages.length} packages{packages.length > shown.length ? ' (first ' + shown.length + ' listed; turn on JavaScript for the rest)' : ''}</p>
+<p id="pkg-status" class="eg" aria-live="polite">Showing the list from when this site was built ({built.slice(0, 10)}).</p>
+<div class="tablewrap listing"><table class="pkgs" id="pkgs">
 <thead><tr><th>Name</th><th>ID</th><th>Kind</th><th>Latest</th><th>Platforms</th><th>License</th></tr></thead>
-<tbody>
-{packages.map((p) => (
-<tr data-kind={p.kind} data-text={[p.name, p.id, p.summary, ...p.tags].join(' ').toLowerCase()}>
+<tbody id="pkg-body">
+{shown.map((p) => (
+<tr>
   <th scope="row" data-label="Name"><a href={`/packages/${p.id}/`}>{p.name}</a></th>
   <td class="mono" data-label="ID">{p.id}</td><td data-label="Kind">{p.kind}</td><td class="mono" data-label="Latest">{p.latest}</td>
   <td class="mono" data-label="Platforms">{p.platforms.join(', ') || 'any'}</td>
-  <td class="lic" title={p.license} data-label="License">{p.license}</td>
+  <td class="lic" data-label="License" title={p.license}>{p.license}</td>
 </tr>))}
 </tbody></table></div>
 <p id="none" hidden>No package matches.</p>
+<p><button type="button" id="more" class="morebtn" hidden>Show more</button></p>
+<script type="application/json" id="snapshot" set:html={snapshot}></script>
+</div>
 </div></section>
-<script is:inline>
-(function () {
-  var f = document.getElementById('filter'), q = document.getElementById('q'), k = document.getElementById('kind');
-  var rows = [].slice.call(document.querySelectorAll('#pkgs tbody tr')), c = document.getElementById('count'), none = document.getElementById('none');
-  f.hidden = false;
-  function run() {
-    var t = q.value.trim().toLowerCase(), n = 0;
-    rows.forEach(function (r) {
-      var ok = (!k.value || r.dataset.kind === k.value) && (!t || r.dataset.text.indexOf(t) >= 0);
-      r.hidden = !ok; if (ok) n++;
-    });
-    c.textContent = n + ' of ' + rows.length + ' shown'; none.hidden = n > 0;
-  }
-  q.addEventListener('input', run); k.addEventListener('change', run); run();
-})();
+<script>
+  import '../../scripts/packages-table.js';
 </script>
 <style is:global>
 .filter{display:flex;gap:16px;flex-wrap:wrap;align-items:end;margin:0 0 20px}
 .filter[hidden]{display:none}
+@media (max-width:40rem){.filter{display:grid;grid-template-columns:1fr 1fr;gap:12px}.filter label:first-child{grid-column:1/-1}.filter input,.filter select{min-width:0;width:100%}}
 .filter label{display:grid;gap:4px;font:600 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
 .filter input,.filter select{font:15px var(--sans);padding:10px 12px;border:1px solid var(--border);border-radius:4px;background:var(--raised);color:var(--text);min-width:12em}
 #count{font:13px var(--mono);color:var(--muted);padding-bottom:10px}

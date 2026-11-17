@@ -50,3 +50,21 @@ the same bytes, or the site is wrong:
 3. Verify with the `curl | shasum` line above.
 
 Until step 1 of "The switch", `main` is unchanged and keeps serving the identity file.
+
+
+## Fresh packages
+
+The packages page reads the repository's published index in the visitor's browser, so a newly published package shows
+in the table at once and has a page at `/packages/view/?id=<id>` (read live). The built pages and the table's fallback
+list come from the package records at build time. Two things keep them fresh without anyone doing anything:
+
+- `pages.yml` rebuilds daily (cron, 05:17 UTC) with the packages checkout at the head of its `main` branch (docs stay at
+  the pinned `OSCAIRN_REF`). No secret is needed.
+- To rebuild at once on every publish, the packages repository's publish workflow can end with a call that sends the
+  `packages-published` event (already accepted by `pages.yml`):
+
+      curl -fsS -X POST -H "Authorization: Bearer $SITE_DISPATCH_TOKEN" -H "Accept: application/vnd.github+json" \
+        https://api.github.com/repos/oscairn/oscairn.org/dispatches -d '{"event_type":"packages-published"}'
+
+  `SITE_DISPATCH_TOKEN` would be a fine-grained token with write access to this repository's contents, stored as a secret
+  of the packages repository. Not set up; the owner's call.
