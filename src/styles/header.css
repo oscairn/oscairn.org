@@ -53,3 +53,11 @@ table.pkgs td[data-label="Status"], table.pkgs td[data-label="Controls"], table.
 table.pkgs td.lic { max-width: 16em; overflow: hidden; text-overflow: ellipsis; }
 table.pkgs thead th:first-child, table.pkgs tbody th:first-child { position: sticky; left: 0; z-index: 1; background: var(--surface); box-shadow: 1px 0 0 var(--border); }
 table.pkgs tr[hidden] { display: none; }
+
+/* Phones: the pinned first column takes at most 40% of the scroller (names wrap between words), type and padding are a step smaller,
+   so more of the other columns shows; those keep one line each. */
+@media (max-width: 40rem) {
+  table.pkgs { font-size: 13px; }
+  table.pkgs th, table.pkgs td { padding-left: 10px; padding-right: 10px; }
+  table.pkgs thead th:first-child, table.pkgs tbody th:first-child { white-space: normal; overflow-wrap: normal; word-break: normal; width: min(9.5rem, 40vw); min-width: min(9.5rem, 40vw); max-width: min(9.5rem, 40vw); }
+}
