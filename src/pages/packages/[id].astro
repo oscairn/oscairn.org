@@ -7,6 +7,8 @@ export function getStaticPaths() {
 const { p } = Astro.props;
 const latest = p.versions[0];
 const short = (s) => s.slice(0, 12);
+// A version's platforms as links to its ready-made archives (plain links, labeled by platform, size beside when known).
+const sizeNote = (e) => (e.size ? ` (about ${formatSize(e.size)})` : '');
 ---
 <SiteLayout title={p.name} description={p.summary.slice(0, 200)} current="Packages">
 <section style="border-top:0"><div class="wrap">
@@ -18,7 +20,7 @@ const short = (s) => s.slice(0, 12);
 <dl>
 <div><dt>Latest version</dt><dd class="mono">{p.latest}</dd></div>
 <div><dt>Kind</dt><dd>{p.kind}</dd></div>
-<div><dt>Platforms</dt><dd class="mono">{latest.platforms.join(', ') || 'any (content, no native builds)'}</dd></div>
+<div><dt>Platforms</dt><dd class="mono">{latest.exports.length ? latest.exports.map((e, i) => <>{i > 0 && ', '}<a href={e.url}>{e.platform ?? 'any'}</a>{sizeNote(e)}</>) : (latest.platforms.join(', ') || 'any (content, no native builds)')}</dd></div>
 <div><dt>License</dt><dd>{p.license}</dd></div>
 <div><dt>Publisher</dt><dd>{p.publisher.name} <span class="mono">({p.publisher.id})</span></dd></div>
 <div><dt>Source</dt><dd>{p.source ? <a href={p.source.url}>{p.source.url}</a> : 'not stated'}{p.source && <span class="mono"> at {short(p.source.revision)}</span>}</dd></div>
@@ -26,14 +28,14 @@ const short = (s) => s.slice(0, 12);
 </dl>
 </div>
 <h2 style="margin-top:40px">Versions</h2>
-<p class="eg">Each version is one signed archive. The instrument downloads and checks it itself.</p>
+<p class="eg">The instrument installs packages itself. The platform links are the ready-made archives of that version, one per platform, for installing by hand or offline from the Library (Install, File).{latest.exports.some((e) => e.size) ? ' Sizes are the repository index\'s, about the size of each file.' : ' Sizes are not shown: the published index could not be read when this page was built.'}</p>
 <div class="tablewrap"><table class="pkgs">
-<thead><tr><th>Version</th><th>Channel</th><th>Platforms</th><th>Signed archive</th><th>Size</th><th>SHA-256</th><th>Source revision</th></tr></thead>
+<thead><tr><th>Version</th><th>Channel</th><th>Platforms</th><th>Archive file (all platforms)</th><th>Size</th><th>SHA-256</th><th>Source revision</th></tr></thead>
 <tbody>
 {p.versions.map((v) => (
 <tr>
   <th scope="row" class="mono">{v.version}{v.yanked ? ' (yanked)' : ''}</th>
-  <td>{v.channel}</td><td class="mono">{v.platforms.join(', ') || 'any'}</td>
+  <td>{v.channel}</td><td class="mono">{v.exports.length ? v.exports.map((e, i) => <>{i > 0 && <br />}<a href={e.url}>{e.platform ?? 'any'}</a>{sizeNote(e)}</>) : (v.platforms.join(', ') || 'any')}</td>
   <td class="mono">{v.archive.file}</td><td>{formatSize(v.archive.size)}</td>
   <td class="mono" title={v.archive.sha256}>{short(v.archive.sha256)}</td>
   <td class="mono">{v.source ? short(v.source.revision) : ''}</td>
