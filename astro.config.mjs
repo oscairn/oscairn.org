@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { DOCS_DIR, IMAGE_BASE } from './lib/config.mjs';
 import { satteri } from '@astrojs/markdown-satteri';
-import { GTM_SCRIPT } from './lib/gtm.mjs';
+import { CONSENT_SCRIPT, CONSENT_STYLE } from './lib/consent.mjs';
 import { listDocs, entryId, titleOf, docsLinks } from './lib/docs.mjs';
 
 // Sidebar from the folder: top-level guides first (README is the overview), then the RFCs in numeric order.
@@ -43,7 +43,7 @@ export default defineConfig({
       description: 'Oscairn is an open instrument platform: one realtime host for synthesis engines, samplers, effects and sequencers.',
       favicon: '/favicon.svg',
       sidebar,
-      head: [{ tag: 'script', content: GTM_SCRIPT }],
+      head: [{ tag: 'script', content: CONSENT_SCRIPT }, { tag: 'style', content: CONSENT_STYLE }],
       customCss: ['@fontsource/inter/latin-400.css', '@fontsource/inter/latin-600.css', '@fontsource/inter/latin-700.css', './src/styles/tokens.css', './src/styles/header.css', './src/styles/starlight.css'],
       components: {
         Header: './src/components/Header.astro',
@@ -51,7 +51,7 @@ export default defineConfig({
         MobileMenuToggle: './src/components/MobileMenuToggle.astro',
         DraftContentNotice: './src/components/NoNotice.astro',
         ThemeSelect: './src/components/ThemeButton.astro',
-        SkipLink: './src/components/SkipLink.astro',
+        Footer: './src/components/Footer.astro',
         SiteTitle: './src/components/SiteTitle.astro',
         MobileMenuFooter: './src/components/MobileMenuFooter.astro',
       },

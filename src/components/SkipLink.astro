@@ -1,7 +1,0 @@
----
-// Starlight's skip link, first in <body>: Google Tag Manager's noscript iframe goes right before it (lib/gtm.mjs).
-import Default from '@astrojs/starlight/components/SkipLink.astro';
-import { GTM_NOSCRIPT } from '../../lib/gtm.mjs';
----
-<Fragment set:html={GTM_NOSCRIPT} />
-<Default />
