@@ -10,7 +10,7 @@ import SiteMenu from '../components/SiteMenu.astro';
 import SearchLink from '../components/SearchLink.astro';
 import ThemeButton from '../components/ThemeButton.astro';
 import NavLinks from '../components/NavLinks.astro';
-import { CONSENT_SCRIPT, CONSENT_STYLE } from '../../lib/consent.mjs';
+import { GTM_SCRIPT, GTM_NOSCRIPT } from '../../lib/gtm.mjs';
 import { GITHUB } from '../../lib/config.mjs';
 const { title, description = 'Oscairn is an open instrument platform.', current } = Astro.props;
 const full = title === 'Oscairn' ? title : `${title} | Oscairn`;
@@ -18,8 +18,7 @@ const full = title === 'Oscairn' ? title : `${title} | Oscairn`;
 <!doctype html>
 <html lang="en">
 <head>
-<script is:inline set:html={CONSENT_SCRIPT}></script>
-<style is:inline set:html={CONSENT_STYLE}></style>
+<script is:inline set:html={GTM_SCRIPT}></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{full}</title>
@@ -33,6 +32,7 @@ const full = title === 'Oscairn' ? title : `${title} | Oscairn`;
 <script is:inline>try{var t=localStorage.getItem('starlight-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 </head>
 <body>
+<Fragment set:html={GTM_NOSCRIPT} />
 <a class="skip" href="#main">Skip to content</a>
 <header class="top"><div class="wrap bar">
 <a class="brand" href="/"><Mark />OSCAIRN</a>
@@ -40,6 +40,6 @@ const full = title === 'Oscairn' ? title : `${title} | Oscairn`;
 <div class="tools"><SearchLink /><ThemeButton /><SiteMenu current={current} /></div>
 </div></header>
 <main id="main"><slot /></main>
-<footer><div class="wrap"><div>Oscairn is licensed under the AGPL-3.0-or-later. One person's own noncommercial project.</div><div><a href={GITHUB}>Source</a> &middot; <a href={`${GITHUB}/blob/main/LICENSE`}>License</a> &middot; <button type="button" class="oc-open" data-consent-open>Cookie settings</button></div></div></footer>
+<footer><div class="wrap"><div>Oscairn is licensed under the AGPL-3.0-or-later. One person's own noncommercial project.</div><div><a href={GITHUB}>Source</a> &middot; <a href={`${GITHUB}/blob/main/LICENSE`}>License</a></div></div></footer>
 </body>
 </html>
