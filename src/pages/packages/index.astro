@@ -12,7 +12,7 @@ const built = new Date().toISOString();
 <SiteLayout title="Packages" description="The packages in the Oscairn repository: engines, effects and content, signed by their publishers." current="Packages">
 <section style="border-top:0"><div class="wrap">
 <p class="lab">Packages</p><h1 style="font-size:clamp(32px,5vw,48px);margin:0 0 16px">Package catalog</h1>
-<p class="lead">The packages in Oscairn's repository, read live from its published index when this page loads (and from the site's build as a fallback). The instrument installs packages itself; each package page links its ready-made archives for installing by hand or offline.</p>
+<p class="lead">Engines, effects and content you can install on an Oscairn instrument. The instrument installs packages itself; each package's page also links its archives for installing by hand.</p>
 <div id="pkg-app" data-repo={PACKAGES_SITE} data-built={built}>
 <form class="filter" id="filter" hidden>
   <label>Search <input type="search" id="q" placeholder="name, id, tag" autocomplete="off"></label>
@@ -22,7 +22,7 @@ const built = new Date().toISOString();
 </form>
 <p id="count" class="countline" role="status" aria-live="polite">{shown.length} of {packages.length} packages{packages.length > shown.length ? ' (first ' + shown.length + ' listed; turn on JavaScript for the rest)' : ''}</p>
 <p id="pkg-status" aria-live="polite">Snapshot from the build ({built.slice(0, 10)}).</p>
-<div class="tablewrap listing"><table class="pkgs" id="pkgs">
+<div class="tablewrap listing" tabindex="0" role="region" aria-label="Packages (scrolls sideways)"><table class="pkgs" id="pkgs">
 <thead><tr><th>Name</th><th>ID</th><th>Kind</th><th>Latest</th><th>Platforms</th><th>License</th></tr></thead>
 <tbody id="pkg-body">
 {shown.map((p) => (
@@ -44,12 +44,10 @@ const built = new Date().toISOString();
 <style is:global>
 .filter{display:flex;gap:16px;flex-wrap:wrap;align-items:end;margin:0 0 20px}
 .filter[hidden]{display:none}
-@media (max-width:40rem){.filter{display:grid;grid-template-columns:1fr 1fr;gap:12px}.filter label:first-child{grid-column:1/-1}.filter input,.filter select{min-width:0;width:100%}}
 .filter label{display:grid;gap:4px;font:600 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
 .filter input,.filter select{font:15px var(--sans);padding:10px 12px;border:1px solid var(--border);border-radius:4px;background:var(--raised);color:var(--text);min-width:12em}
+@media (max-width:40rem){.filter{display:grid;grid-template-columns:1fr 1fr;gap:12px}.filter label:first-child{grid-column:1/-1}.filter input,.filter select{min-width:0;width:100%}}
 #count{font:13px var(--mono);color:var(--muted);padding-bottom:10px}
-.tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;background:var(--surface)}
-table.pkgs{border-collapse:collapse;width:100%;font-size:14px}
 table.pkgs th,table.pkgs td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
 table.pkgs thead th{font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);white-space:nowrap}
 table.pkgs tbody tr:last-child th,table.pkgs tbody tr:last-child td{border-bottom:0}
@@ -64,6 +62,5 @@ table.pkgs tr[hidden]{display:none}
 .morebtn:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
 .filter label{gap:8px}
 .filter input:focus-visible,.filter select:focus-visible{outline-offset:2px}
-.lic{max-width:16em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
 </style>
 </SiteLayout>

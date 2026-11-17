@@ -138,6 +138,27 @@ for (const name of ['idx10k', 'cat10k']) {
   report.push(`load ${name} (phone, 4x CPU throttle, local network): ${Date.now() - t0} ms from navigation to live table`);
   await ctx.close();
 }
+// Phone widths: the table is a table in its own scroller; capture it at rest and scrolled halfway (sticky first column).
+for (const w of [360, 390, 430]) {
+  const ctx = await browser.newContext({ viewport: { width: w, height: 844 }, isMobile: true, hasTouch: true, colorScheme: 'light' });
+  for (const [name, url, live] of [['table', '/packages/', true], ['table-nojs-built', '/packages/', false], ['versions', '/packages/org.oscairn.analog/', false], ['devices', '/devices/', false]]) {
+    const page = await ctx.newPage();
+    await page.goto(base + url, { waitUntil: 'networkidle' });
+    if (live) await page.waitForFunction(() => document.getElementById('pkg-app').dataset.live, null, { timeout: 30000 });
+    const m = await page.evaluate(() => { const t = document.querySelector('.tablewrap'); const r = t.getBoundingClientRect(); return { right: r.right, sw: document.documentElement.scrollWidth, iw: innerWidth, inner: t.scrollWidth, client: t.clientWidth }; });
+    if (m.sw > m.iw) problems.push(`${name} ${w}: the page scrolls sideways`);
+    if (m.right > m.iw - 15) problems.push(`${name} ${w}: the table scroller ends at ${Math.round(m.right)}`);
+    if (m.inner <= m.client) problems.push(`${name} ${w}: the table does not need scrolling (${m.inner} <= ${m.client})`);
+    await page.locator('.tablewrap').first().scrollIntoViewIfNeeded();
+    await page.screenshot({ path: path.join(out, `live-${name}-${w}-rest.png`) });
+    await page.evaluate(() => { const t = document.querySelector('.tablewrap'); t.scrollLeft = (t.scrollWidth - t.clientWidth) / 2; });
+    await page.waitForTimeout(150);
+    await page.screenshot({ path: path.join(out, `live-${name}-${w}-scrolled.png`) });
+    report.push(`${name} ${w}: scroller ${Math.round(m.client)} px wide holds ${m.inner} px; page ${m.sw}/${m.iw}`);
+    await page.close();
+  }
+  await ctx.close();
+}
 // 5. JavaScript off
 for (const [vn, v] of Object.entries(views)) {
   const ctx = await browser.newContext({ viewport: { width: v.width, height: v.height }, javaScriptEnabled: false, isMobile: v.isMobile });

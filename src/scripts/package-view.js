@@ -42,7 +42,7 @@ ${entry.tags.length ? `<div><dt>Tags</dt><dd class="mono">${h(entry.tags.join(',
 </dl></div>
 <h2 style="margin-top:40px">Versions</h2>
 <p class="eg">The instrument installs packages itself. The platform links are the ready-made archives of that version, for installing by hand or offline from the Library (Install, File). Read live from the published index, which this page does not verify; the instrument checks signatures when it installs.</p>
-<div class="tablewrap"><table class="pkgs"><thead><tr><th>Version</th><th>Channel</th><th>Platforms</th></tr></thead><tbody>
+<div class="tablewrap" tabindex="0" role="region" aria-label="Versions (scrolls sideways)"><table class="pkgs"><thead><tr><th>Version</th><th>Channel</th><th>Platforms</th></tr></thead><tbody>
 ${entry.versions.map((v) => `<tr><th scope="row" class="mono" data-label="Version">${h(v.version)}${v.yanked ? ' (yanked)' : ''}</th><td data-label="Channel">${h(v.channel)}</td><td class="mono" data-label="Platforms">${links(v).join('<br>')}</td></tr>`).join('')}
 </tbody></table></div>
 ${v0.requires.length ? `<h2 style="margin-top:40px">Needs</h2><ul class="mono">${v0.requires.map((r) => `<li><a href="/packages/view/?id=${encodeURIComponent(r.id)}">${h(r.id)}</a> ${h(r.version || '')}</li>`).join('')}</ul>` : ''}`;

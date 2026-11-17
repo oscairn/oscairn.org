@@ -41,6 +41,21 @@ const problems = [];
 const browser = await chromium.launch();
 
 async function check(page, label, w) {
+  // Inside the page gutter (16 px): on the plain pages no text, control or table scroller may reach past viewport - 16.
+  // A table scroller may hold wider content (it scrolls), but the scroller itself must fit. The "no horizontal scroll"
+  // check below cannot see this: an element ending at 388 of 390 px does not scroll the page.
+  if (w <= 500 && /^(landing|packages|package|devices)/.test(label)) {
+    const past = await page.evaluate(() => {
+      const lim = window.innerWidth - 16 + 1, out = [];
+      for (const el of document.querySelectorAll('main :is(input, select, button, a, p, h1, h2, h3, label, li, img, dl, .tablewrap)')) {
+        if (el.closest('.tablewrap') && !el.classList.contains('tablewrap') || el.closest('svg, [hidden]') || el.offsetParent === null) continue;
+        const r = el.getBoundingClientRect();
+        if (r.width && r.right > lim) out.push(`${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}${el.className && typeof el.className === 'string' ? '.' + el.className.split(' ')[0] : ''} ends at ${Math.round(r.right)}`);
+      }
+      return out.slice(0, 3);
+    });
+    for (const x of past) problems.push(`${label}: past the gutter: ${x}`);
+  }
   const r = await page.evaluate(() => {
     const doc = document.documentElement;
     const header = document.querySelector('header');
@@ -76,7 +91,7 @@ for (const scheme of ['light', 'dark']) {
 
 for (const [w, h] of phones) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, colorScheme: 'dark', hasTouch: true, isMobile: true });
-  for (const [name, url] of [['landing', '/'], ['guide', '/docs/developer-guide/']]) {
+  for (const [name, url] of [['landing', '/'], ['guide', '/docs/developer-guide/'], ['packages', '/packages/'], ['devices', '/devices/']]) {
     const page = await ctx.newPage();
     await page.goto(base + url, { waitUntil: 'networkidle' });
     await check(page, `${name} ${w}x${h}`, w);

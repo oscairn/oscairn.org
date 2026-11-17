@@ -34,7 +34,7 @@ const rows = (list) => list.map(device).filter((e) => e.p);
 
 <section><div class="wrap">
 <p class="lab">Working instruments</p><h2>Hardware Oscairn runs on today</h2>
-<div class="tablewrap"><table class="pkgs"><thead><tr><th>Instrument</th><th>Cores</th><th>Memory</th><th>Screen</th><th>Controls</th><th>Status</th></tr></thead><tbody>
+<div class="tablewrap" tabindex="0" role="region" aria-label="Working instruments (scrolls sideways)"><table class="pkgs"><thead><tr><th>Instrument</th><th>Cores</th><th>Memory</th><th>Screen</th><th>Controls</th><th>Status</th></tr></thead><tbody>
 {rows(data.instruments).map((e) => (<tr><th scope="row" data-label="Instrument">{e.p.name}</th><td data-label="Cores">{e.p.compute?.cores ?? 'none'}</td><td data-label="Memory">{e.p.compute?.memory ? `${e.p.compute.memory} MiB` : 'none'}</td><td class="mono" data-label="Screen">{screen(e.p)}</td><td data-label="Controls">{kinds(e.p)}</td><td data-label="Status">{e.status} <a href={src(e.source)}>Source</a></td></tr>))}
 </tbody></table></div>
 </div></section>
@@ -42,7 +42,7 @@ const rows = (list) => list.map(device).filter((e) => e.p);
 <section><div class="wrap">
 <p class="lab">MIDI controllers</p><h2>Controllers that drive Oscairn but do not run it</h2>
 <p class="eg">A controller's profile lists its MIDI ports and controls; it has no platform, screen or memory.</p>
-<div class="tablewrap"><table class="pkgs"><thead><tr><th>Controller</th><th>MIDI ports</th><th>Controls</th><th>Status</th></tr></thead><tbody>
+<div class="tablewrap" tabindex="0" role="region" aria-label="MIDI controllers (scrolls sideways)"><table class="pkgs"><thead><tr><th>Controller</th><th>MIDI ports</th><th>Controls</th><th>Status</th></tr></thead><tbody>
 {rows(controllers).map((e) => (<tr><th scope="row" data-label="Controller">{e.p.name}</th><td data-label="MIDI ports">{ports(e.p)}</td><td data-label="Controls">{kinds(e.p)}</td><td data-label="Status">{e.status || 'Not described in the docs I read.'}{e.source && <> <a href={src(e.source)}>Source</a></>}</td></tr>))}
 </tbody></table></div>
 </div></section>
@@ -50,7 +50,7 @@ const rows = (list) => list.map(device).filter((e) => e.p);
 <section><div class="wrap">
 <p class="lab">Potential target instruments</p><h2>Hardware studied or planned, not running</h2>
 <p class="eg">Their profiles' values are estimates unless marked stated; no Oscairn build has run on these.</p>
-<div class="tablewrap"><table class="pkgs"><thead><tr><th>Device</th><th>Cores</th><th>Memory</th><th>Screen</th><th>Controls</th><th>Values</th><th>Status</th></tr></thead><tbody>
+<div class="tablewrap" tabindex="0" role="region" aria-label="Potential target instruments (scrolls sideways)"><table class="pkgs"><thead><tr><th>Device</th><th>Cores</th><th>Memory</th><th>Screen</th><th>Controls</th><th>Values</th><th>Status</th></tr></thead><tbody>
 {rows(data.targets).map((e) => (<tr><th scope="row" data-label="Device">{e.p.name}</th><td data-label="Cores">{e.p.compute?.cores ?? 'none'}</td><td data-label="Memory">{e.p.compute?.memory ? `${e.p.compute.memory} MiB` : 'none'}</td><td class="mono" data-label="Screen">{screen(e.p)}</td><td data-label="Controls">{kinds(e.p)}</td><td data-label="Values">{estimated(e.p)}</td><td data-label="Status">{e.status} {e.note && <strong>{e.note} </strong>}<a href={src(e.source)}>Source</a></td></tr>))}
 </tbody></table></div>
 </div></section>
@@ -58,11 +58,11 @@ const rows = (list) => list.map(device).filter((e) => e.p);
 <section><div class="wrap">
 <p class="lab">Desktop</p><h2>Operating systems and plugin formats</h2>
 <p class="eg">Status words are the docs' own.</p>
-<div class="tablewrap"><table class="pkgs"><thead><tr><th>Operating system</th><th>Status</th></tr></thead><tbody>
+<div class="tablewrap" tabindex="0" role="region" aria-label="Operating systems (scrolls sideways)"><table class="pkgs"><thead><tr><th>Operating system</th><th>Status</th></tr></thead><tbody>
 {data.desktop.systems.map((e) => (<tr><th scope="row" data-label="Operating system">{e.name}</th><td data-label="Status">{e.status} <a href={src(e.source)}>Source</a></td></tr>))}
 {rows(data.desktop.profiles).map((e) => (<tr><th scope="row" data-label="Operating system">{e.p.name}</th><td data-label="Status">{e.status} <a href={src(e.source)}>Source</a></td></tr>))}
 </tbody></table></div>
-<div class="tablewrap" style="margin-top:24px"><table class="pkgs"><thead><tr><th>Plugin format</th><th>Status</th></tr></thead><tbody>
+<div class="tablewrap" tabindex="0" role="region" aria-label="Plugin formats (scrolls sideways)" style="margin-top:24px"><table class="pkgs"><thead><tr><th>Plugin format</th><th>Status</th></tr></thead><tbody>
 {data.desktop.formats.map((e) => (<tr><th scope="row" data-label="Plugin format">{e.name}</th><td data-label="Status">{e.status} <a href={src(e.source)}>Source</a></td></tr>))}
 </tbody></table></div>
 </div></section>
@@ -73,8 +73,6 @@ const rows = (list) => list.map(device).filter((e) => e.p);
 <ul>{unclassified.map((p) => <li>{p.name} <span class="mono">({p.id})</span></li>)}</ul>
 </div></section>}
 <style is:global>
-.tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;background:var(--surface)}
-table.pkgs{border-collapse:collapse;width:100%;font-size:14px}
 table.pkgs th,table.pkgs td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
 table.pkgs thead th{font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);white-space:nowrap}
 table.pkgs tbody tr:last-child th,table.pkgs tbody tr:last-child td{border-bottom:0}

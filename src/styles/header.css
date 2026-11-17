@@ -40,14 +40,16 @@ site-search button[data-open-modal] { min-height: 44px; }
 @media (min-width: 50rem) { :root[data-has-sidebar] .header { padding-inline-end: var(--sl-nav-pad-x); } }
 .sidebar-nav-top { border-bottom: 1px solid var(--border); margin-bottom: 8px; }
 
-/* Phone: table rows become stacked cards (each cell shows its column name), so nothing is cut off. */
-@media (max-width: 40rem) {
-  table.pkgs thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  table.pkgs, table.pkgs tbody, table.pkgs tr, table.pkgs th, table.pkgs td { display: block; width: 100%; }
-  table.pkgs tr { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-  table.pkgs tbody tr:last-child { border-bottom: 0; }
-  table.pkgs tr[hidden] { display: none; }
-  table.pkgs th, table.pkgs td { border: 0 !important; padding: 3px 0 !important; }
-  table.pkgs td::before, table.pkgs tbody th:not(:first-child)::before { content: attr(data-label); display: block; font: 600 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
-  .lic { max-width: none; white-space: normal; }
-}
+/* Tables (packages, a package's versions, devices): a real table in its own horizontal scroller on every width. The first
+   column stays put with an opaque background; a shadow at the right edge shows there is more and goes at the end. */
+.tablewrap { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; border: 1px solid var(--border); border-radius: 8px; background:
+  linear-gradient(to left, var(--surface) 30%, rgba(0, 0, 0, 0)) right center / 48px 100% no-repeat local,
+  radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, .3), rgba(0, 0, 0, 0)) right center / 18px 100% no-repeat scroll,
+  var(--surface); }
+.tablewrap:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+table.pkgs { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 680px; font-size: 14px; }
+table.pkgs th, table.pkgs td { white-space: nowrap; }
+table.pkgs td[data-label="Status"], table.pkgs td[data-label="Controls"], table.pkgs td[data-label="MIDI ports"] { white-space: normal; min-width: 22em; }
+table.pkgs td.lic { max-width: 16em; overflow: hidden; text-overflow: ellipsis; }
+table.pkgs thead th:first-child, table.pkgs tbody th:first-child { position: sticky; left: 0; z-index: 1; background: var(--surface); box-shadow: 1px 0 0 var(--border); }
+table.pkgs tr[hidden] { display: none; }
